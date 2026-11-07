@@ -1,0 +1,49 @@
+@startuml sequencia-agendar
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+autonumber
+title Agenda Solidária — Diagrama de Sequência: UC05 Agendar atendimento
+
+actor Atendente
+participant "AgendamentoController\n<<web>>" as C
+participant "AgendamentoService\n<<application>>" as S
+participant "BeneficiarioRepository\n<<porta>>" as BR
+participant "ProfissionalRepository\n<<porta>>" as PR
+participant "Agendamento\n<<domain>>" as A
+collections "regras: List<RegraAgendamento>\n<<Strategy>>" as R
+participant "AgendamentoRepository\n<<porta>>" as AR
+participant "PublicadorEventosAgendamento\n<<Subject>>" as P
+collections "AgendamentoObserver\n(Notificação, Auditoria)" as O
+
+Atendente -> C : POST /api/v1/agendamentos\n{beneficiarioId, profissionalId, inicio}
+C -> C : valida DTO (Bean Validation)
+C -> S : agendar(solicitacao)
+S -> BR : buscarPorId(beneficiarioId)
+BR --> S : Beneficiario
+S -> PR : buscarPorId(profissionalId)
+PR --> S : Profissional
+S -> A ** : novo(beneficiario, profissional, inicio, obs, agora)
+note right of A : Creator / Factory Method:\nfim = inicio + duração do profissional
+S -> R : validar(contexto) — para cada regra
+note right of R
+  1. participantes ativos
+  2. antecedência mínima
+  3. dentro da disponibilidade
+  4. sem conflito do profissional
+  5. sem conflito do beneficiário
+  6. limite de agendamentos futuros
+end note
+alt alguma regra violada
+  R --> S : lança RegraNegocioException / ConflitoException
+  S --> C : exceção propagada
+  C --> Atendente : 422 Unprocessable Entity / 409 Conflict\n(Problem Details)
+else todas as regras atendidas
+  S -> AR : salvar(agendamento)
+  AR --> S : agendamento com id
+  S -> P : publicar(AgendamentoEvento CRIADO)
+  P -> O : aoOcorrer(evento)
+  note right of O : envia mensagem ao beneficiário\ne registra auditoria
+  S --> C : AgendamentoDetalhado
+  C --> Atendente : 201 Created + Location
+end
+@enduml

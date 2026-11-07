@@ -1,0 +1,159 @@
+@startuml classes-dominio
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #2B6CB0
+}
+hide empty members
+title Agenda Solidária — Diagrama de Classes (domínio e aplicação)
+
+package "domain.model" #F7FAFC {
+  class Beneficiario <<Entity / Aggregate Root>> {
+    - id: Long
+    - nome: String
+    - cpf: Cpf
+    - dataNascimento: LocalDate
+    - telefone: String
+    - email: String
+    - ativo: boolean
+    + {static} novo(...): Beneficiario
+    + alterarDados(...)
+    + idade(): int
+    + inativar()
+  }
+
+  class Cpf <<Value Object>> {
+    + valor: String
+    + formatado(): String
+  }
+
+  class Profissional <<Entity / Aggregate Root>> {
+    - id: Long
+    - nome: String
+    - especialidade: Especialidade
+    - registroProfissional: String
+    - duracaoAtendimentoMinutos: int
+    - ativo: boolean
+    + {static} novo(...): Profissional
+    + definirDisponibilidades(List<Disponibilidade>)
+    + atendeNoIntervalo(inicio, fim): boolean
+    + horariosPossiveis(data): List<LocalDateTime>
+  }
+
+  class Disponibilidade <<Value Object>> {
+    + diaSemana: DayOfWeek
+    + horaInicio: LocalTime
+    + horaFim: LocalTime
+    + abrange(inicio, fim): boolean
+    + sobrepoe(outra): boolean
+  }
+
+  enum Especialidade {
+    PSICOLOGIA
+    NUTRICAO
+    FISIOTERAPIA
+    ASSISTENCIA_SOCIAL
+    ODONTOLOGIA
+    ORIENTACAO_JURIDICA
+  }
+
+  class Agendamento <<Entity / Aggregate Root>> {
+    - id: Long
+    - beneficiarioId: Long
+    - profissionalId: Long
+    - inicio: LocalDateTime
+    - fim: LocalDateTime
+    - observacao: String
+    - motivoCancelamento: String
+    - criadoEm: LocalDateTime
+    + {static} novo(Beneficiario, Profissional, inicio, obs, agora): Agendamento
+    + conflitaCom(inicio, fim): boolean
+    + confirmar()
+    + cancelar(motivo)
+    + registrarComparecimento(agora)
+    + registrarFalta(agora)
+  }
+
+  enum StatusAgendamento <<State>> {
+    AGENDADO
+    CONFIRMADO
+    REALIZADO
+    FALTOU
+    CANCELADO
+    + confirmar(): StatusAgendamento
+    + cancelar(): StatusAgendamento
+    + registrarComparecimento(): StatusAgendamento
+    + registrarFalta(): StatusAgendamento
+    + ocupaHorario(): boolean
+  }
+}
+
+package "domain.repository (portas)" #FFFBEA {
+  interface BeneficiarioRepository
+  interface ProfissionalRepository
+  interface AgendamentoRepository {
+    + salvar(Agendamento)
+    + buscarPorId(Long)
+    + listarPorProfissionalEntre(...)
+    + listarPorBeneficiarioEntre(...)
+    + listarFuturosPorBeneficiario(...)
+    + filtrar(FiltroAgendamento)
+  }
+}
+
+package "domain.event" #FFF5F5 {
+  interface AgendamentoObserver <<Observer>> {
+    + aoOcorrer(AgendamentoEvento)
+  }
+  class AgendamentoEvento <<record>>
+}
+
+package "application" #F0FFF4 {
+  class AgendamentoService <<Use Case / GRASP Controller>> {
+    + agendar(SolicitacaoAgendamento)
+    + confirmar(id)
+    + cancelar(id, motivo)
+    + registrarComparecimento(id)
+    + registrarFalta(id)
+    + listar(FiltroAgendamento)
+  }
+  class PublicadorEventosAgendamento <<Subject>> {
+    + publicar(AgendamentoEvento)
+  }
+  interface RegraAgendamento <<Strategy>> {
+    + validar(ContextoAgendamento)
+  }
+  class RegraParticipantesAtivos
+  class RegraAntecedenciaMinima
+  class RegraDentroDaDisponibilidade
+  class RegraSemConflitoProfissional
+  class RegraSemConflitoBeneficiario
+  class RegraLimiteAgendamentosAtivos
+}
+
+Beneficiario *-- "1" Cpf
+Profissional *-- "0..*" Disponibilidade
+Profissional --> "1" Especialidade
+Agendamento --> "1" StatusAgendamento
+Agendamento ..> Beneficiario : referencia por id
+Agendamento ..> Profissional : referencia por id
+
+AgendamentoService --> AgendamentoRepository
+AgendamentoService --> BeneficiarioRepository
+AgendamentoService --> ProfissionalRepository
+AgendamentoService o--> "1..*" RegraAgendamento
+AgendamentoService --> PublicadorEventosAgendamento
+PublicadorEventosAgendamento o--> "0..*" AgendamentoObserver
+PublicadorEventosAgendamento ..> AgendamentoEvento
+
+RegraAgendamento <|.. RegraParticipantesAtivos
+RegraAgendamento <|.. RegraAntecedenciaMinima
+RegraAgendamento <|.. RegraDentroDaDisponibilidade
+RegraAgendamento <|.. RegraSemConflitoProfissional
+RegraAgendamento <|.. RegraSemConflitoBeneficiario
+RegraAgendamento <|.. RegraLimiteAgendamentosAtivos
+RegraSemConflitoProfissional --> AgendamentoRepository
+RegraSemConflitoBeneficiario --> AgendamentoRepository
+RegraLimiteAgendamentosAtivos --> AgendamentoRepository
+@enduml

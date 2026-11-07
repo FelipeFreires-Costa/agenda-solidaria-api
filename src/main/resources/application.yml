@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: agenda-solidaria-api
+  datasource:
+    url: jdbc:h2:mem:agendasolidaria;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: America/Fortaleza
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
+
+agenda:
+  fuso-horario: America/Fortaleza
+  seed:
+    habilitado: true
+  regras:
+    antecedencia-minima-horas: 2
+    limite-agendamentos-ativos: 3

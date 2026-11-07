@@ -1,0 +1,71 @@
+@startuml arquitetura
+!pragma layout smetana
+skinparam componentStyle rectangle
+skinparam package {
+  BorderColor #2B6CB0
+}
+title Agenda Solidária — Visão da Arquitetura (Clean Architecture)
+
+actor "Cliente HTTP\n(Postman / Swagger / front-end)" as Cliente
+
+package "web (Interface Adapters - entrada)" #E6F0FF {
+  [Controllers REST] as Ctrl
+  [DTOs + Bean Validation] as Dto
+  [TratadorGlobalDeErros\n(Problem Details)] as Err
+}
+
+package "application (Casos de Uso)" #E9FBEF {
+  [BeneficiarioService] as BS
+  [ProfissionalService] as PS
+  [AgendamentoService] as AS
+  [RelatorioService] as RS
+  [Regras de agendamento\n(Strategy)] as Regras
+  [PublicadorEventos\n(Observer - Subject)] as Pub
+}
+
+package "domain (Entidades e Regras Corporativas)" #FFF8E1 {
+  [Entidades: Beneficiario,\nProfissional, Agendamento] as Ent
+  [Value Objects: Cpf,\nDisponibilidade] as VO
+  [StatusAgendamento (State)] as St
+  [<<interface>>\nPortas: *Repository] as Portas
+  [<<interface>>\nAgendamentoObserver] as Obs
+}
+
+package "infrastructure (Frameworks & Drivers - saída)" #FDECEC {
+  [Adapters JPA\n(Adapter)] as Jpa
+  [Spring Data JPA] as SD
+  database "H2 (dev) /\nPostgreSQL (prod)" as DB
+  [NotificacaoMensagemObserver\nAuditoriaObserver] as Notif
+  [CasosDeUsoConfig\n(Composition Root)] as Cfg
+}
+
+Cliente --> Ctrl : JSON / HTTP
+Ctrl --> Dto
+Ctrl --> BS
+Ctrl --> PS
+Ctrl --> AS
+Ctrl --> RS
+AS --> Regras
+AS --> Pub
+BS --> Ent
+AS --> Ent
+PS --> Ent
+Ent --> VO
+Ent --> St
+AS --> Portas
+BS --> Portas
+PS --> Portas
+Pub --> Obs
+
+Jpa ..|> Portas : implementa
+Notif ..|> Obs : implementa
+Jpa --> SD
+SD --> DB
+Cfg ..> AS : instancia e injeta
+
+note bottom of Portas
+  Regra da dependência: as setas de código
+  apontam sempre para dentro (domain).
+  O domínio não conhece Spring, JPA nem HTTP.
+end note
+@enduml

@@ -1,0 +1,18 @@
+@startuml estados-agendamento
+!pragma layout smetana
+title Agenda Solidária — Diagrama de Estados do Agendamento (padrão State)
+
+[*] --> AGENDADO : agendar()
+AGENDADO --> CONFIRMADO : confirmar()
+AGENDADO --> CANCELADO : cancelar(motivo)
+CONFIRMADO --> CANCELADO : cancelar(motivo)
+CONFIRMADO --> REALIZADO : registrarComparecimento()\n[após o horário de início]
+CONFIRMADO --> FALTOU : registrarFalta()\n[após o horário de início]
+REALIZADO --> [*]
+FALTOU --> [*]
+CANCELADO --> [*]
+
+AGENDADO : ocupa o horário
+CONFIRMADO : ocupa o horário
+CANCELADO : libera o horário
+@enduml

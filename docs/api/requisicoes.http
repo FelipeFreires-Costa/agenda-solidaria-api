@@ -1,0 +1,68 @@
+### Agenda Solidária API — requisições de exemplo
+### Use com a extensão "REST Client" (VS Code / Cursor) ou o cliente HTTP do IntelliJ.
+### Ajuste as datas para a próxima segunda/terça-feira.
+
+@base = http://localhost:8080/api/v1
+
+### Listar profissionais de psicologia
+GET {{base}}/profissionais?especialidade=PSICOLOGIA
+
+### Horários livres da psicóloga (id 1) em uma segunda-feira
+GET {{base}}/profissionais/1/horarios-livres?data=2026-11-16
+
+### Cadastrar profissional voluntário
+POST {{base}}/profissionais
+Content-Type: application/json
+
+{
+  "nome": "Paula Regina Matos",
+  "especialidade": "ODONTOLOGIA",
+  "registroProfissional": "CRO-CE 12345",
+  "duracaoAtendimentoMinutos": 40,
+  "disponibilidades": [
+    { "diaSemana": "THURSDAY", "horaInicio": "13:00", "horaFim": "17:00" }
+  ]
+}
+
+### Cadastrar beneficiário
+POST {{base}}/beneficiarios
+Content-Type: application/json
+
+{
+  "nome": "Raimunda Nonata Freitas",
+  "cpf": "610.531.783-28",
+  "dataNascimento": "1975-08-21",
+  "telefone": "(88) 99905-5005"
+}
+
+### Agendar atendimento
+POST {{base}}/agendamentos
+Content-Type: application/json
+
+{
+  "beneficiarioId": 4,
+  "profissionalId": 1,
+  "inicio": "2026-11-16T08:50:00",
+  "observacao": "Encaminhado pela assistente social"
+}
+
+### Agenda da semana
+GET {{base}}/agendamentos?de=2026-11-16&ate=2026-11-22
+
+### Confirmar presença
+PATCH {{base}}/agendamentos/1/confirmar
+
+### Cancelar
+PATCH {{base}}/agendamentos/1/cancelar
+Content-Type: application/json
+
+{ "motivo": "Beneficiário conseguiu atendimento no CAPS" }
+
+### Registrar comparecimento
+PATCH {{base}}/agendamentos/1/comparecimento
+
+### Registrar falta
+PATCH {{base}}/agendamentos/1/falta
+
+### Relatório de impacto do mês
+GET {{base}}/relatorios/atendimentos?de=2026-11-01&ate=2026-11-30

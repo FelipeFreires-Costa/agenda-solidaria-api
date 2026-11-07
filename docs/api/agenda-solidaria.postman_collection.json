@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "Agenda Solidária API",
+    "description": "Coleção de demonstração do MVP (ACE 8 - Análise e Projeto de Sistemas II - UniCatólica). Execute a API com `mvnw spring-boot:run` e rode as requisições na ordem.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base", "value": "http://localhost:8080/api/v1" },
+    { "key": "data", "value": "2026-11-16" },
+    { "key": "agendamentoId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Profissionais",
+      "item": [
+        { "name": "Listar (filtro por especialidade)", "request": { "method": "GET", "url": "{{base}}/profissionais?especialidade=PSICOLOGIA" } },
+        { "name": "Buscar por id", "request": { "method": "GET", "url": "{{base}}/profissionais/1" } },
+        { "name": "Horários livres", "request": { "method": "GET", "url": "{{base}}/profissionais/1/horarios-livres?data={{data}}" } },
+        {
+          "name": "Cadastrar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/profissionais",
+            "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Paula Regina Matos\",\n  \"especialidade\": \"ODONTOLOGIA\",\n  \"registroProfissional\": \"CRO-CE 12345\",\n  \"duracaoAtendimentoMinutos\": 40,\n  \"disponibilidades\": [\n    { \"diaSemana\": \"THURSDAY\", \"horaInicio\": \"13:00\", \"horaFim\": \"17:00\" }\n  ]\n}" }
+          }
+        },
+        {
+          "name": "Definir disponibilidades",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/profissionais/1/disponibilidades",
+            "body": { "mode": "raw", "raw": "[\n  { \"diaSemana\": \"MONDAY\", \"horaInicio\": \"08:00\", \"horaFim\": \"12:00\" },\n  { \"diaSemana\": \"WEDNESDAY\", \"horaInicio\": \"14:00\", \"horaFim\": \"18:00\" }\n]" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Beneficiários",
+      "item": [
+        { "name": "Listar", "request": { "method": "GET", "url": "{{base}}/beneficiarios" } },
+        {
+          "name": "Cadastrar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/beneficiarios",
+            "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Raimunda Nonata Freitas\",\n  \"cpf\": \"610.531.783-28\",\n  \"dataNascimento\": \"1975-08-21\",\n  \"telefone\": \"(88) 99905-5005\"\n}" }
+          }
+        },
+        {
+          "name": "Cadastrar com CPF inválido (422)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/beneficiarios",
+            "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Teste\",\n  \"cpf\": \"123.456.789-00\",\n  \"dataNascimento\": \"1990-01-01\",\n  \"telefone\": \"(88) 90000-0000\"\n}" }
+          }
+        },
+        { "name": "Inativar", "request": { "method": "DELETE", "url": "{{base}}/beneficiarios/4" } }
+      ]
+    },
+    {
+      "name": "Agendamentos",
+      "item": [
+        {
+          "name": "Agendar",
+          "event": [{ "listen": "test", "script": { "exec": ["if (pm.response.code === 201) { pm.collectionVariables.set('agendamentoId', pm.response.json().id); }", "pm.test('201 Created', () => pm.response.to.have.status(201));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/agendamentos",
+            "body": { "mode": "raw", "raw": "{\n  \"beneficiarioId\": 4,\n  \"profissionalId\": 1,\n  \"inicio\": \"{{data}}T08:50:00\",\n  \"observacao\": \"Encaminhado pela assistente social\"\n}" }
+          }
+        },
+        {
+          "name": "Agendar no mesmo horário (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/agendamentos",
+            "body": { "mode": "raw", "raw": "{\n  \"beneficiarioId\": 3,\n  \"profissionalId\": 1,\n  \"inicio\": \"{{data}}T09:00:00\"\n}" }
+          }
+        },
+        { "name": "Listar com filtros", "request": { "method": "GET", "url": "{{base}}/agendamentos?profissionalId=1&status=AGENDADO" } },
+        { "name": "Buscar por id", "request": { "method": "GET", "url": "{{base}}/agendamentos/{{agendamentoId}}" } },
+        { "name": "Confirmar", "request": { "method": "PATCH", "url": "{{base}}/agendamentos/{{agendamentoId}}/confirmar" } },
+        {
+          "name": "Cancelar",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base}}/agendamentos/{{agendamentoId}}/cancelar",
+            "body": { "mode": "raw", "raw": "{ \"motivo\": \"Beneficiário conseguiu atendimento no CAPS\" }" }
+          }
+        },
+        { "name": "Registrar comparecimento", "request": { "method": "PATCH", "url": "{{base}}/agendamentos/{{agendamentoId}}/comparecimento" } },
+        { "name": "Registrar falta", "request": { "method": "PATCH", "url": "{{base}}/agendamentos/{{agendamentoId}}/falta" } }
+      ]
+    },
+    {
+      "name": "Relatórios",
+      "item": [
+        { "name": "Resumo de atendimentos", "request": { "method": "GET", "url": "{{base}}/relatorios/atendimentos?de=2026-11-01&ate=2026-11-30" } }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+@startuml casos-de-uso
+!pragma layout smetana
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #EEF5FF
+  BorderColor #2B6CB0
+}
+title Agenda Solidária — Diagrama de Casos de Uso
+
+actor "Atendente /\nVoluntário da recepção" as Atendente
+actor "Profissional\nvoluntário" as Profissional
+actor "Coordenação da\nassociação" as Coordenacao
+actor "Beneficiário" as Beneficiario <<secundário>>
+
+rectangle "Agenda Solidária API" {
+  usecase "UC01 Manter beneficiários" as UC01
+  usecase "UC02 Manter profissionais" as UC02
+  usecase "UC03 Definir disponibilidade semanal" as UC03
+  usecase "UC04 Consultar horários livres" as UC04
+  usecase "UC05 Agendar atendimento" as UC05
+  usecase "UC06 Confirmar presença" as UC06
+  usecase "UC07 Cancelar agendamento" as UC07
+  usecase "UC08 Registrar comparecimento/falta" as UC08
+  usecase "UC09 Consultar agenda (filtros)" as UC09
+  usecase "UC10 Emitir relatório de impacto" as UC10
+  usecase "Validar regras de agendamento" as VAL
+  usecase "Notificar beneficiário" as NOT
+}
+
+Atendente --> UC01
+Atendente --> UC04
+Atendente --> UC05
+Atendente --> UC06
+Atendente --> UC07
+Atendente --> UC09
+
+Profissional --> UC03
+Profissional --> UC08
+Profissional --> UC09
+
+Coordenacao --> UC02
+Coordenacao --> UC10
+
+UC05 ..> VAL : <<include>>
+UC05 ..> NOT : <<include>>
+UC06 ..> NOT : <<include>>
+UC07 ..> NOT : <<include>>
+UC08 ..> NOT : <<include>>
+UC04 .> UC05 : <<extend>>
+UC02 ..> UC03 : <<include>>
+
+NOT --> Beneficiario
+@enduml
