@@ -37,6 +37,12 @@ concentrando as vagas e **dificuldade de prestar contas** a parceiros e doadores
 
 Pré-requisito: **JDK 17+** (não é preciso instalar Maven nem banco de dados).
 
+Se o Maven disser `release version 17 not supported`, o `JAVA_HOME` está no JDK 11. No PowerShell:
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-17.0.12"
+```
+
 ```bash
 # Windows
 mvnw.cmd spring-boot:run
@@ -47,9 +53,13 @@ mvnw.cmd spring-boot:run
 
 | Recurso | URL |
 |---|---|
-| Swagger UI (documentação interativa) | http://localhost:8080/swagger-ui/index.html |
+| Tela da associação (demonstração com a comunidade) | http://localhost:8080/ |
+| Swagger UI (documentação interativa da API) | http://localhost:8080/swagger-ui/index.html |
+| Atalho para o Swagger | http://localhost:8080/docs-api |
 | OpenAPI JSON | http://localhost:8080/v3/api-docs |
 | Console do H2 | http://localhost:8080/h2-console (JDBC URL `jdbc:h2:mem:agendasolidaria`, usuário `sa`) |
+
+Na tela da associação a recepção marca horários, a coordenação vê o relatório de impacto e o CPF do beneficiário aparece mascarado. O núcleo acadêmico continua sendo a **API REST**.
 
 Ao iniciar, a aplicação carrega **dados fictícios de demonstração** (4 profissionais, 4 beneficiários e
 6 agendamentos — incluindo histórico). Para desligar: `agenda.seed.habilitado=false`.
@@ -57,7 +67,7 @@ Ao iniciar, a aplicação carrega **dados fictícios de demonstração** (4 prof
 ### Testes
 
 ```bash
-mvnw.cmd test        # 40 testes: domínio, casos de uso (sem Spring) e integração HTTP ponta a ponta
+mvnw.cmd test        # testes de domínio, casos de uso (sem Spring) e integração HTTP ponta a ponta
 ```
 
 ## Endpoints
@@ -153,7 +163,7 @@ Fontes PlantUML em [`docs/uml`](docs/uml).
 ## Próximos passos
 
 Autenticação com perfis (Spring Security + JWT), PostgreSQL em produção, integração real com WhatsApp/SMS
-(novo `AgendamentoObserver`), lista de espera, lembrete na véspera e front-end web/mobile.
+(novo `AgendamentoObserver`), lista de espera e lembrete na véspera.
 
 ## Licença
 

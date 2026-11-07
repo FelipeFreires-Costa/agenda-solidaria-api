@@ -80,6 +80,9 @@ impacto social.
 
 **Dentro do MVP:** tudo o que está nas seções 4 e 5.
 
+**Complemento da ação comunitária (não substitui a API):** tela HTML em `src/main/resources/static` que consome
+os endpoints, para a demonstração com a coordenação e os voluntários.
+
 **Fora do MVP (próximas versões):** autenticação e perfis de acesso (Spring Security/JWT), banco PostgreSQL em
-produção, envio real de WhatsApp/SMS (basta implementar um novo `AgendamentoObserver`), lista de espera,
-lembrete automático na véspera e front-end web/mobile.
+produção, envio real de WhatsApp/SMS (basta implementar um novo `AgendamentoObserver`), lista de espera e
+lembrete automático na véspera.

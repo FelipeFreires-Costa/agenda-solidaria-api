@@ -16,6 +16,7 @@ public class OpenApiConfig {
                 .version("1.0.0")
                 .description("MVP de API RESTful para associações comunitárias organizarem os atendimentos "
                         + "gratuitos prestados por profissionais voluntários (psicologia, nutrição, fisioterapia...). "
+                        + "A tela da associação fica em http://localhost:8080/. "
                         + "Projeto da ACE 8 - Análise e Projeto de Sistemas II - UniCatólica.")
                 .contact(new Contact().name("Felipe Freires da Costa")));
     }

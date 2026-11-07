@@ -9,7 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class RaizController {
 
     @GetMapping("/")
-    public String raiz() {
+    public String inicio() {
+        return "forward:/index.html";
+    }
+
+    @GetMapping("/docs-api")
+    public String documentacaoDaApi() {
         return "redirect:/swagger-ui/index.html";
     }
 }

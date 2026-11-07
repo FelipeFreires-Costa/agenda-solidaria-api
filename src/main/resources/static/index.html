@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda Solidária</title>
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="marca">
+      <span class="marca-simbolo" aria-hidden="true">♥</span>
+      <div>
+        <strong>Agenda Solidária</strong>
+        <p>Atendimentos voluntários da associação</p>
+      </div>
+    </div>
+    <nav class="abas" role="tablist">
+      <button class="aba ativa" data-pagina="painel">Painel</button>
+      <button class="aba" data-pagina="agenda">Agenda</button>
+      <button class="aba" data-pagina="marcar">Marcar</button>
+      <button class="aba" data-pagina="pessoas">Pessoas</button>
+    </nav>
+    <a class="link-api" href="/docs-api" target="_blank" rel="noopener">API / Swagger</a>
+  </header>
+
+  <main>
+    <p id="alerta" class="alerta" hidden></p>
+
+    <section id="pagina-painel" class="pagina">
+      <div class="cabecalho-pagina">
+        <div>
+          <h1>Impacto social</h1>
+          <p>Números para a coordenação prestar contas a parceiros e doadores.</p>
+        </div>
+        <form id="form-periodo" class="periodo">
+          <label>De <input type="date" id="rel-de" required></label>
+          <label>Até <input type="date" id="rel-ate" required></label>
+          <button type="submit">Atualizar</button>
+        </form>
+      </div>
+      <div class="cards" id="cards-impacto"></div>
+      <div class="grade-2">
+        <article class="cartao">
+          <h2>Por especialidade</h2>
+          <div id="tabela-especialidade"></div>
+        </article>
+        <article class="cartao">
+          <h2>Próximos atendimentos</h2>
+          <div id="lista-proximos"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="pagina-agenda" class="pagina" hidden>
+      <div class="cabecalho-pagina">
+        <div>
+          <h1>Agenda</h1>
+          <p>Confirme, cancele ou registre comparecimento e falta.</p>
+        </div>
+        <div class="filtros">
+          <select id="filtro-status">
+            <option value="">Todos os status</option>
+            <option>AGENDADO</option>
+            <option>CONFIRMADO</option>
+            <option>REALIZADO</option>
+            <option>FALTOU</option>
+            <option>CANCELADO</option>
+          </select>
+          <button type="button" id="btn-atualizar-agenda">Atualizar</button>
+        </div>
+      </div>
+      <div id="lista-agenda"></div>
+    </section>
+
+    <section id="pagina-marcar" class="pagina" hidden>
+      <div class="cabecalho-pagina">
+        <div>
+          <h1>Marcar atendimento</h1>
+          <p>Só aparecem horários livres. Se o horário já estiver ocupado, a API recusa sozinha.</p>
+        </div>
+      </div>
+      <form id="form-marcar" class="cartao formulario">
+        <label>Profissional voluntário
+          <select id="marcar-profissional" required></select>
+        </label>
+        <label>Data
+          <input type="date" id="marcar-data" required>
+        </label>
+        <div>
+          <p class="rotulo">Horários livres</p>
+          <div id="marcar-horarios" class="horarios">Escolha o profissional e a data.</div>
+        </div>
+        <label>Beneficiário
+          <select id="marcar-beneficiario" required></select>
+        </label>
+        <label>Observação
+          <input type="text" id="marcar-obs" maxlength="500" placeholder="Ex.: retorno, encaminhado pela escola">
+        </label>
+        <input type="hidden" id="marcar-inicio">
+        <button type="submit">Confirmar marcação</button>
+      </form>
+    </section>
+
+    <section id="pagina-pessoas" class="pagina" hidden>
+      <div class="cabecalho-pagina">
+        <div>
+          <h1>Pessoas</h1>
+          <p>Beneficiários da comunidade e profissionais voluntários.</p>
+        </div>
+      </div>
+      <div class="grade-2">
+        <article class="cartao">
+          <h2>Cadastrar beneficiário</h2>
+          <form id="form-beneficiario" class="formulario">
+            <label>Nome completo <input name="nome" required maxlength="120"></label>
+            <label>CPF <input name="cpf" required placeholder="000.000.000-00"></label>
+            <label>Nascimento <input type="date" name="dataNascimento" required></label>
+            <label>Telefone <input name="telefone" required placeholder="(88) 9xxxx-xxxx"></label>
+            <label>E-mail <input type="email" name="email" maxlength="120"></label>
+            <button type="submit">Salvar beneficiário</button>
+          </form>
+          <div id="lista-beneficiarios" class="lista-compacta"></div>
+        </article>
+        <article class="cartao">
+          <h2>Profissionais voluntários</h2>
+          <div id="lista-profissionais" class="lista-compacta"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    ACE 8 · Análise e Projeto de Sistemas II · UniCatólica · 2026.2
+  </footer>
+
+  <dialog id="dialogo-cancelar">
+    <form method="dialog" id="form-cancelar" class="formulario">
+      <h2>Cancelar atendimento</h2>
+      <label>Motivo
+        <input id="motivo-cancelamento" required maxlength="500" placeholder="Informe o motivo">
+      </label>
+      <div class="acoes">
+        <button type="submit">Cancelar horário</button>
+        <button type="button" class="secundario" id="fechar-cancelar">Voltar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>

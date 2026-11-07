@@ -25,6 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -108,6 +110,16 @@ class AgendaSolidariaApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalAgendamentos").value(1))
                 .andExpect(jsonPath("$.porStatus.CANCELADO").value(1));
+    }
+
+    @Test
+    void paginaDaAssociacaoEstaDisponivel() throws Exception {
+        mvc.perform(get("/")).andExpect(status().isOk())
+                .andExpect(forwardedUrl("/index.html"));
+        mvc.perform(get("/index.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Painel")))
+                .andExpect(content().string(containsString("Marcar")));
     }
 
     @Test
