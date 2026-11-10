@@ -8,7 +8,7 @@ curso de Sistemas de Informação do **Centro Universitário Católica de Quixad
 
 | | |
 |---|---|
-| **Equipe** | Felipe Freires da Costa — matrícula 2023010627 |
+| **Equipe** | Felipe Freires da Costa (2023010627)<br>Gabriel Samilo Pinto de Oliveira (2023020103)<br>Eric Matheus da Silva Temoteo (2022010143)<br>Gustavo Barros Sampaio (2021020120)<br>Dherick de Sousa Bomfim (2023010636) |
 | **Stack** | Java 17 · Spring Boot 3.3 · Spring Data JPA · H2 · Bean Validation · springdoc-openapi · JUnit 5 |
 | **Arquitetura** | Clean Architecture + noções de DDD · SOLID · GoF (Strategy, State, Observer, Adapter, Factory Method) · GRASP |
 

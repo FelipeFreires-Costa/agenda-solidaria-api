@@ -18,6 +18,9 @@ public class OpenApiConfig {
                         + "gratuitos prestados por profissionais voluntários (psicologia, nutrição, fisioterapia...). "
                         + "A tela da associação fica em http://localhost:8080/. "
                         + "Projeto da ACE 8 - Análise e Projeto de Sistemas II - UniCatólica.")
-                .contact(new Contact().name("Felipe Freires da Costa")));
+                .contact(new Contact().name(
+                        "Felipe Freires da Costa, Gabriel Samilo Pinto de Oliveira, "
+                                + "Eric Matheus da Silva Temoteo, Gustavo Barros Sampaio "
+                                + "e Dherick de Sousa Bomfim")));
     }
 }
